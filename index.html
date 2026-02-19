@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Real-Time Fraud Detection System</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="sidebar">
+        <div class="logo">
+            <i class="fas fa-shield-alt"></i>
+            <span>FraudGuard</span>
+        </div>
+        <nav class="nav-menu">
+            <a href="#" class="nav-item active" data-page="dashboard">
+                <i class="fas fa-chart-line"></i>
+                <span>Dashboard</span>
+            </a>
+            <a href="#" class="nav-item" data-page="transactions">
+                <i class="fas fa-list"></i>
+                <span>Transactions</span>
+            </a>
+            <a href="#" class="nav-item" data-page="analyze">
+                <i class="fas fa-search"></i>
+                <span>Analyze</span>
+            </a>
+            <a href="#" class="nav-item" data-page="alerts">
+                <i class="fas fa-bell"></i>
+                <span>Alerts</span>
+                <span class="badge" id="alert-badge">0</span>
+            </a>
+            <a href="#" class="nav-item" data-page="reports">
+                <i class="fas fa-file-alt"></i>
+                <span>Reports</span>
+            </a>
+        </nav>
+        <div class="sidebar-footer">
+            <div class="status-indicator">
+                <span class="status-dot"></span>
+                <span>System Online</span>
+            </div>
+        </div>
+    </div>
+
+    <main class="main-content">
+        <header class="top-bar">
+            <button class="btn-primary" id="export-btn" style="margin-left: 10px;">
+    <i class="fas fa-download"></i> Export CSV
+</button>
+            <div class="search-box">
+                <i class="fas fa-search"></i>
+                <input type="text" id="global-search" placeholder="Search transactions, locations, users...">
+            </div>
+            <div class="header-actions">
+                <button class="icon-btn" id="refresh-btn">
+                    <i class="fas fa-sync-alt"></i>
+                </button>
+                <button class="icon-btn">
+                    <i class="fas fa-cog"></i>
+                </button>
+                <div class="user-avatar">
+                    <i class="fas fa-user"></i>
+                </div>
+            </div>
+        </header>
+
+        <!-- Dashboard Page -->
+        <div class="page" id="dashboard-page">
+            <div class="page-header">
+                <h1>Dashboard</h1>
+                <p>Real-time fraud detection and monitoring</p>
+            </div>
+
+            <!-- Stats Cards -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon blue">
+                        <i class="fas fa-exchange-alt"></i>
+                    </div>
+                    <div class="stat-info">
+                        <span class="stat-label">Total Transactions</span>
+                        <span class="stat-value" id="total-transactions">0</span>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon red">
+                        <i class="fas fa-exclamation-triangle"></i>
+                    </div>
+                    <div class="stat-info">
+                        <span class="stat-label">Fraudulent</span>
+                        <span class="stat-value" id="fraud-transactions">0</span>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon green">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                    <div class="stat-info">
+                        <span class="stat-label">Legitimate</span>
+                        <span class="stat-value" id="legit-transactions">0</span>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon orange">
+                        <i class="fas fa-percentage"></i>
+                    </div>
+                    <div class="stat-info">
+                        <span class="stat-label">Fraud Rate</span>
+                        <span class="stat-value" id="fraud-rate">0%</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Charts Grid -->
+            <div class="charts-grid">
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h3>Fraud Distribution</h3>
+                    </div>
+                    <div class="chart-body">
+                        <canvas id="fraud-distribution-chart"></canvas>
+                    </div>
+                </div>
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h3>Transaction Amount Distribution</h3>
+                    </div>
+                    <div class="chart-body">
+                        <canvas id="amount-distribution-chart"></canvas>
+                    </div>
+                </div>
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h3>Fraud by Transaction Type</h3>
+                    </div>
+                    <div class="chart-body">
+                        <canvas id="transaction-type-chart"></canvas>
+                    </div>
+                </div>
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h3>High Risk Locations</h3>
+                    </div>
+                    <div class="chart-body">
+                        <canvas id="location-risk-chart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Transactions -->
+            <div class="recent-transactions">
+                <div class="section-header">
+                    <h3>Recent Transactions</h3>
+                    <button class="btn-primary" onclick="showPage('transactions')">View All</button>
+                </div>
+                <div class="table-container">
+                    <table id="recent-transactions-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Timestamp</th>
+                                <th>Amount</th>
+                                <th>Type</th>
+                                <th>Location</th>
+                                <th>Status</th>
+                                <th>Risk</th>
+                            </tr>
+                        </thead>
+                        <tbody id="recent-transactions-body">
+                            <!-- Populated by JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Transactions Page -->
+        <div class="page hidden" id="transactions-page">
+            <div class="page-header">
+                <h1>Transactions</h1>
+                <p>View and manage all transactions</p>
+            </div>
+            <div class="transactions-filters">
+                <select id="filter-type">
+                    <option value="">All Types</option>
+                    <option value="purchase">Purchase</option>
+                    <option value="transfer">Transfer</option>
+                    <option value="withdrawal">Withdrawal</option>
+                    <option value="payment">Payment</option>
+                </select>
+                <select id="filter-status">
+                    <option value="">All Status</option>
+                    <option value="0">Legitimate</option>
+                    <option value="1">Fraudulent</option>
+                </select>
+                <button class="btn-primary" onclick="loadTransactions()">Apply Filters</button>
+            </div>
+            <div class="table-container">
+                <table id="all-transactions-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Timestamp</th>
+                            <th>Amount</th>
+                            <th>Type</th>
+                            <th>Location</th>
+                            <th>Status</th>
+                            <th>Fraud Probability</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="all-transactions-body">
+                        <!-- Populated by JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+            <div class="pagination" id="pagination">
+                <!-- Populated by JavaScript -->
+            </div>
+        </div>
+
+        <!-- Analyze Page -->
+        <div class="page hidden" id="analyze-page">
+            <div class="page-header">
+                <h1>Analyze Transaction</h1>
+                <p>Analyze a single transaction for fraud detection</p>
+            </div>
+            <div class="analyze-form">
+                <div class="form-group">
+                    <label>Transaction Amount</label>
+                    <input type="number" id="analyze-amount" placeholder="Enter amount" step="1.00">
+                </div>
+                <div class="form-group">
+                    <label>Transaction Type</label>
+                    <select id="analyze-type">
+                        <option value="purchase">Purchase</option>
+                        <option value="transfer">Transfer</option>
+                        <option value="withdrawal">Withdrawal</option>
+                        <option value="payment">Payment</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Location</label>
+                    <input type="text" id="analyze-location" placeholder="Enter location">
+                </div>
+                <button class="btn-primary" onclick="analyzeTransaction()">Analyze</button>
+            </div>
+            <div class="analysis-result hidden" id="analysis-result">
+                <div class="result-header">
+                    <h3>Analysis Result</h3>
+                </div>
+                <div class="result-content">
+                    <div class="result-item">
+                        <span class="result-label">Fraud Prediction:</span>
+                        <span class="result-value" id="result-prediction">-</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">Fraud Probability:</span>
+                        <span class="result-value" id="result-probability">-</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">Risk Level:</span>
+                        <span class="result-value" id="result-risk">-</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">Recommendation:</span>
+                        <span class="result-value" id="result-recommendation">-</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Alerts Page -->
+        <div class="page hidden" id="alerts-page">
+            <div class="page-header">
+                <h1>Alerts</h1>
+                <p>View fraud alerts and notifications</p>
+            </div>
+            <div class="alerts-list" id="alerts-list">
+                <!-- Populated by JavaScript -->
+            </div>
+        </div>
+
+        <!-- Reports Page -->
+        <div class="page hidden" id="reports-page">
+            <div class="page-header">
+                <h1>Reports</h1>
+                <p>Generate and view fraud detection reports</p>
+            </div>
+            <div class="reports-grid">
+                <div class="report-card">
+                    <i class="fas fa-chart-pie"></i>
+                    <h4>Summary Report</h4>
+                    <p>Overview of fraud statistics</p>
+                    <button class="btn-secondary" onclick="generateReport('summary')">Generate</button>
+                </div>
+                <div class="report-card">
+                    <i class="fas fa-map-marked-alt"></i>
+                    <h4>Geographic Analysis</h4>
+                    <p>Fraud by location</p>
+                    <button class="btn-secondary" onclick="generateReport('geographic')">Generate</button>
+                </div>
+                <div class="report-card">
+                    <i class="fas fa-clock"></i>
+                    <h4>Time-based Analysis</h4>
+                    <p>Fraud trends over time</p>
+                    <button class="btn-secondary" onclick="generateReport('time-analysis')">Generate</button>
+                </div>
+                <div class="report-card">
+                    <i class="fas fa-user"></i>
+                    <h4>User Behavior</h4>
+                    <p>User fraud patterns</p>
+                    <button class="btn-secondary" onclick="generateReport('user-behavior')">Generate</button>
+                </div>
+            </div>
+            
+            <!-- Report Results Section -->
+            <div class="report-result" id="report-result">
+                <div class="report-header">
+                    <h3 id="report-title">Report Results</h3>
+                    <button class="btn-secondary" onclick="closeReport()">Close</button>
+                </div>
+                <div class="report-content" id="report-content">
+                    <!-- Charts and data will be loaded here -->
+                    <div class="report-charts" id="report-charts">
+                        <canvas id="report-chart"></canvas>
+                    </div>
+                    <div class="report-stats" id="report-stats">
+                        <!-- Statistics will be shown here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <script src="charts.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
